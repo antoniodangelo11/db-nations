@@ -11,7 +11,7 @@ public class Main {
         String user = "root";
         String password = "root";
 
-        try { Connection con = DriverManager.getConnection(url, user, password);
+        try {Connection con = DriverManager.getConnection(url, user, password);
 
             // Inizializzo lo Scanner
             Scanner input = new Scanner(System.in);
