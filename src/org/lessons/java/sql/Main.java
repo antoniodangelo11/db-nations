@@ -1,8 +1,7 @@
 package org.lessons.java.sql;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws SQLException {
@@ -12,15 +11,39 @@ public class Main {
         String user = "root";
         String password = "root";
 
-        Connection con = null;
-        try {
-            con = DriverManager.getConnection(url, user, password);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if(con != null){
-                con.close();
+        try { Connection con = DriverManager.getConnection(url, user, password);
+
+            String query = "SELECT c.country_id, c.name, r.name, c2.name "
+                    + "FROM countries c "
+                    + "JOIN regions r ON r.region_id = c.region_id "
+                    + "JOIN continents c2 ON c2.continent_id = r.continent_id "
+                    + "ORDER BY c.name";
+
+            try (PreparedStatement preparedStatement = con.prepareStatement(query)) {
+                    // Qui possono andare i parametri
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+
+                    while (resultSet.next()) {
+
+                        int countryId = resultSet.getInt("country_id");
+                        String countryName = resultSet.getString("c.name");
+                        String regionName = resultSet.getString("r.name");
+                        String continentName = resultSet.getString("c2.name");
+
+                        System.out.println(countryId + " " + countryName + " " + regionName + " " + continentName);
+                    }
+                } catch (SQLException e) {
+                    System.out.println("Unable to execute query");
+                    e.printStackTrace();
+                }
+            } catch (SQLException e) {
+                System.out.println("Unable to prepare statement");
+                e.printStackTrace();
             }
+
+        } catch (SQLException e) {
+            System.out.println("Unable to open connection");
+            e.printStackTrace();
         }
     }
 }
